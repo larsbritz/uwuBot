@@ -11,11 +11,11 @@ module.exports = {
         if(content.length === 2){
             try{
                 this.switch = JSON.parse(content[1].toLowerCase());
-                message.channel.send("annoy set to " + this.switch + "😎")
+                message.channel.send("annoy set to " + this.switch + " 😎")
                 return;
             }catch{
                 this.switch = false;
-                message.channel.send("annoy set to " + this.switch + "😎")
+                message.channel.send("annoy set to " + this.switch + " 😎")
                 return;
             }
         }

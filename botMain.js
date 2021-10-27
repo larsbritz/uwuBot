@@ -26,7 +26,7 @@ global.bot.on('ready', () => { //At Startup
         init(); //inits some variables
     }
 });
-
+console.log("hst")
 global.bot.on('message', (message) => { //When Message sent
 
     if (message.author.bot) { return; } //If Author is a Bot, return
