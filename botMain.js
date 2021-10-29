@@ -6,6 +6,10 @@ const fh = require('./Commands/FileHandler');
 const { version } = require('./package.json');
 const adminprefix = fh.get('../Files/local/adminprefix.json');
 const annoyFs = require("./Commands/setAnnoy");
+const counterFs = require("./Commands/counter");
+const CronJob = require('cron').CronJob;
+const { fstat } = require('fs');
+const { stringify } = require('querystring');
 
 const debug = false; //true > no ready-message and BackgroundTasks
 global.bot = new Discord.Client();
@@ -14,6 +18,7 @@ global.wsip = fh.get('../Files/local/wsip.json'); //IP thats used for every WS-C
 var BotID;
 var first = true;
 var commands = requireDir('./Commands');
+let counterSet = [];
 
 global.bot.on('error', err => { //ErrorHandling
     console.error('Bot Error, see LogFile for more info\n');
@@ -26,19 +31,22 @@ global.bot.on('ready', () => { //At Startup
         init(); //inits some variables
     }
 });
-console.log("hst")
 global.bot.on('message', (message) => { //When Message sent
 
     if (message.author.bot) { return; } //If Author is a Bot, return
 
     if (message.channel.type != 'text') { return; } //If Channel is not TextChannel, return
 
+    counterFs.incrementWord(message, counterSet);
+
     let contentArgs = message.content.split(" "); //Split Message for simpler Access
+    
 
     let annoyObject = annoyFs.readToAnnoy();
         if(message.channel.id == annoyObject.channelId){      //checks and executions the annoy command
             message.channel.send(`<@${annoyObject.userId}>`);
         }
+
 
     if (message.content.startsWith(global.guilds[message.guild.id]['prefix'])) {
 
@@ -106,6 +114,15 @@ global.bot.on('message', (message) => { //When Message sent
     }
 });
 
+let job = new CronJob('7 13 * * *', function(){
+    if(counterFs.switch === true ){
+    let channel = global.bot.channels.cache.get(counterFs.channel);
+    channel.send(stringify(counterSet).split("&"));
+    counterSet = [];
+    }
+});
+job.start();
+
 global.bot.login(fh.get('../Files/local/botToken.json').token).catch(err => {
     Logger.log('botToken.json is invalid: ' + err);
     return;
@@ -114,7 +131,6 @@ global.bot.login(fh.get('../Files/local/botToken.json').token).catch(err => {
 global.bot.on('guildCreate', guild => { //Joining a new Guild while bot is active
     serverJoin(guild);
 })
-
 
 
 function init() {
