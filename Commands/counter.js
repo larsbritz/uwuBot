@@ -6,41 +6,45 @@ module.exports = {
     channel: 0,
     switch: false,
 
-    counter: function(message){
+    counter: function (message) {
         let fs = require("../Commands/setAnnoy")
         let content = message.content.split(" ");
-        if(content.element = 2){
-            try{
+        if (content.element = 2) {
+            try {
                 this.switch = JSON.parse(content[1].toLowerCase());
                 message.channel.send("word counter " + this.switch + " 😎");
                 return;
-            } catch{
-                if(fs.getId(content[1], '#') != ""){
+            } catch {
+                if (fs.getId(content[1], '#') != "") {
                     this.channel = fs.getId(content[1], '#');
-                message.channel.send("channel set to " + `<#${this.channel}>` + " 👌");
-                return;
+                    message.channel.send("channel set to " + `<#${this.channel}>` + " 👌");
+                    return;
                 }
                 message.channel.send("Invalid input");
             }
         }
     },
 
-    incrementWord: function(message, array){
+    incrementWord: function (message, array) {
         let content = message.content.split(" ");
-        if(content[0].startsWith('!') || content[0].startsWith('https')) return;
-        
+        if (content[0].startsWith('!') || content[0].startsWith('https')) return;
+        let newArr = [];
         content.forEach(element => {
-            if(element.includes(",")) element.replace(",", "");
-            if(element.includes(".")) element.replace(".", "");
-            if(element.includes("\n")){
-                 element = element.replace("\n"," ");
-                 let tempStr = element.split(" ");
-                 array[tempStr[0]] = (typeof array[tempStr[0]] === 'undefined') ? 1: array[tempStr[0]]+1;
-                 array[tempStr[1]] = (typeof array[tempStr[1]] === 'undefined') ? 1: array[tempStr[1]]+1;
-                
-            }else{
-                array[element] = (typeof array[element] === 'undefined') ? 1: array[element]+1;
+            let temp = element.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
+            if(temp.includes("\n")){
+                let tempR = temp.split("\n");
+                tempR.forEach(elementR =>{
+                    newArr.push(elementR);
+    
+                })
+            } else {
+                newArr.push(temp);
             }
+
         });
+
+        newArr.forEach(element => {
+            array[element] = (typeof array[element] === 'undefined') ? 1 : array[element] + 1;
+        })
     }
 }

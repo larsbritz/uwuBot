@@ -114,7 +114,7 @@ global.bot.on('message', (message) => { //When Message sent
     }
 });
 
-let job = new CronJob('7 13 * * *', function(){
+let job = new CronJob('24 3 * * *', function(){
     if(counterFs.switch === true ){
     let channel = global.bot.channels.cache.get(counterFs.channel);
     channel.send(stringify(counterSet).split("&"));
